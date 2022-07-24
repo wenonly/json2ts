@@ -2,6 +2,8 @@
 
 json2ts converts a JSON to TypeScript interfaces.
 
+fork from [json2ts](https://github.com/GregorBiswanger/json2ts)
+
 ## Installation
 
 ```
@@ -17,21 +19,8 @@ let result = json2ts.convert(jsonContent);
 
 ```
 
-## As IDE Extension
-
-This module is used as IDE Extension for [Visual Studio Code](https://github.com/GregorBiswanger/VSCode-json2ts) and [Brackets](https://github.com/GregorBiswanger/Brackets-json2ts).
-
-![json2ts Screenshot](https://github.com/GregorBiswanger/VSCode-json2ts/blob/master/images/json2ts.gif?raw=true)
-
-
-## Tests
-
-```
-npm test
-```
-
 ### Contributing
-Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/GregorBiswanger/json2ts/issues)).
+Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/wenonly/json2ts/issues)).
 Please make sure all commits are properly documented.
 
 ### License
