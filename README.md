@@ -1,29 +1,20 @@
 # json2ts
 
-json2ts converts a JSON to TypeScript interfaces.
+将`JSON`对象转化为`TypeScript interfaces`.
 
 fork from [json2ts](https://github.com/GregorBiswanger/json2ts)
 
-## Installation
+## 安装
 
-```
-npm install json2ts
+```shell
+npm install @wenonly/json2ts
 ```
 
-## Usage
-json2ts can be used as a Node.js module:
+## 使用
 
-```
+在Node.js中使用:
+
+```js
 let json2ts = require("json2ts");
 let result = json2ts.convert(jsonContent);
-
 ```
-
-### Contributing
-Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/wenonly/json2ts/issues)).
-Please make sure all commits are properly documented.
-
-### License
-MIT-licensed
-
-** Enjoy! **
