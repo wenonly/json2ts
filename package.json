@@ -3,20 +3,26 @@
   "version": "1.0.0",
   "description": "Convert a JSON to TypeScript interfaces.",
   "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "dev": "tsc --watch",
-    "build": "tsc"
+    "build": "rollup --config rollup.config.ts --configPlugin typescript"
   },
   "keywords": [
     "typescript",
     "json"
   ],
   "license": "MIT",
-  "dependencies": {
-    "underscore": "^1.8.3"
-  },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^18.7.23",
-    "typescript": "^4.7.4"
+    "rollup": "^4.9.6",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21"
   }
 }

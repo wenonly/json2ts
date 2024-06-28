@@ -1,10 +1,19 @@
-import * as _ from 'underscore';
+import {
+  isArray,
+  isBoolean,
+  isDate,
+  isEqual,
+  isNumber,
+  isObject,
+  isString,
+  partial,
+} from "lodash-es";
 
 export class Json2Ts {
   convert(content: string): string {
     let jsonContent = JSON.parse(content);
 
-    if (_.isArray(jsonContent)) {
+    if (isArray(jsonContent)) {
       return this.convertObjectToTsInterfaces(jsonContent[0]);
     }
 
@@ -13,7 +22,7 @@ export class Json2Ts {
 
   private convertObjectToTsInterfaces(
     jsonContent: any,
-    objectName: string = 'RootObject',
+    objectName: string = "RootObject"
   ): string {
     let optionalKeys: string[] = [];
     let objectResult: string[] = [];
@@ -21,42 +30,42 @@ export class Json2Ts {
     for (let key in jsonContent) {
       let value = jsonContent[key];
 
-      if (_.isObject(value) && !_.isArray(value)) {
+      if (isObject(value) && !isArray(value)) {
         let childObjectName = this.toUpperFirstLetter(key);
         objectResult.push(
-          this.convertObjectToTsInterfaces(value, childObjectName),
+          this.convertObjectToTsInterfaces(value, childObjectName)
         );
-        jsonContent[key] = this.removeMajority(childObjectName) + ';';
-      } else if (_.isArray(value)) {
+        jsonContent[key] = this.removeMajority(childObjectName) + ";";
+      } else if (isArray(value)) {
         let arrayTypes: any = this.detectMultiArrayTypes(value);
 
         if (this.isMultiArray(arrayTypes)) {
           let multiArrayBrackets = this.getMultiArrayBrackets(value);
 
           if (this.isAllEqual(arrayTypes)) {
-            jsonContent[key] = arrayTypes[0].replace('[]', multiArrayBrackets);
+            jsonContent[key] = arrayTypes[0].replace("[]", multiArrayBrackets);
           } else {
-            jsonContent[key] = 'any' + multiArrayBrackets + ';';
+            jsonContent[key] = "any" + multiArrayBrackets + ";";
           }
-        } else if (value.length > 0 && _.isObject(value[0])) {
+        } else if (value.length > 0 && isObject(value[0])) {
           let childObjectName = this.toUpperFirstLetter(key);
           objectResult.push(
-            this.convertObjectToTsInterfaces(value[0], childObjectName),
+            this.convertObjectToTsInterfaces(value[0], childObjectName)
           );
-          jsonContent[key] = this.removeMajority(childObjectName) + '[];';
+          jsonContent[key] = this.removeMajority(childObjectName) + "[];";
         } else {
           jsonContent[key] = arrayTypes[0];
         }
-      } else if (_.isDate(value)) {
-        jsonContent[key] = 'Date;';
-      } else if (_.isString(value)) {
-        jsonContent[key] = 'string;';
-      } else if (_.isBoolean(value)) {
-        jsonContent[key] = 'boolean;';
-      } else if (_.isNumber(value)) {
-        jsonContent[key] = 'number;';
+      } else if (isDate(value)) {
+        jsonContent[key] = "Date;";
+      } else if (isString(value)) {
+        jsonContent[key] = "string;";
+      } else if (isBoolean(value)) {
+        jsonContent[key] = "boolean;";
+      } else if (isNumber(value)) {
+        jsonContent[key] = "number;";
       } else {
-        jsonContent[key] = 'any;';
+        jsonContent[key] = "any;";
         optionalKeys.push(key);
       }
     }
@@ -64,35 +73,35 @@ export class Json2Ts {
     let result = this.formatCharsToTypeScript(
       jsonContent,
       objectName,
-      optionalKeys,
+      optionalKeys
     );
     objectResult.push(result);
 
-    return objectResult.join('\n\n');
+    return objectResult.join("\n\n");
   }
 
   private detectMultiArrayTypes(
     value: any,
-    valueType: string[] = [],
+    valueType: string[] = []
   ): string[] {
-    if (_.isArray(value)) {
+    if (isArray(value)) {
       if (value.length === 0) {
-        valueType.push('any[];');
-      } else if (_.isArray(value[0])) {
+        valueType.push("any[];");
+      } else if (isArray(value[0])) {
         for (let index = 0, length = value.length; index < length; index++) {
           let element = value[index];
 
           let valueTypeResult = this.detectMultiArrayTypes(element, valueType);
           valueType.concat(valueTypeResult);
         }
-      } else if (_.all(value, _.isString)) {
-        valueType.push('string[];');
-      } else if (_.all(value, _.isNumber)) {
-        valueType.push('number[];');
-      } else if (_.all(value, _.isBoolean)) {
-        valueType.push('boolean[];');
+      } else if (value.every(isString)) {
+        valueType.push("string[];");
+      } else if (value.every(isNumber)) {
+        valueType.push("number[];");
+      } else if (value.every(isBoolean)) {
+        valueType.push("boolean[];");
       } else {
-        valueType.push('any[];');
+        valueType.push("any[];");
       }
     }
 
@@ -104,18 +113,18 @@ export class Json2Ts {
   }
 
   private isAllEqual(array: string[]) {
-    return _.all(array.slice(1), _.partial(_.isEqual, array[0]));
+    return array.slice(1).every(partial(isEqual, array[0]));
   }
 
-  private getMultiArrayBrackets(content: string): string {
+  private getMultiArrayBrackets(content: string[]): string {
     let jsonString = JSON.stringify(content);
-    let brackets = '';
+    let brackets = "";
 
     for (let index = 0, length = jsonString.length; index < length; index++) {
       let element = jsonString[index];
 
-      if (element === '[') {
-        brackets = brackets + '[]';
+      if (element === "[") {
+        brackets = brackets + "[]";
       } else {
         index = length;
       }
@@ -127,31 +136,31 @@ export class Json2Ts {
   private formatCharsToTypeScript(
     jsonContent: any,
     objectName: string,
-    optionalKeys: string[],
+    optionalKeys: string[]
   ): string {
-    let result = JSON.stringify(jsonContent, null, '\t')
-      .replace(new RegExp('"', 'g'), '')
-      .replace(new RegExp(',', 'g'), '');
+    let result = JSON.stringify(jsonContent, null, "\t")
+      .replace(new RegExp('"', "g"), "")
+      .replace(new RegExp(",", "g"), "");
 
-    let allKeys = _.allKeys(jsonContent);
+    let allKeys = Object.keys(jsonContent);
     for (let index = 0, length = allKeys.length; index < length; index++) {
       let key = allKeys[index];
-      if (_.contains(optionalKeys, key)) {
-        result = result.replace(new RegExp(key + ':', 'g'), key + '?:');
+      if (optionalKeys.includes(key)) {
+        result = result.replace(new RegExp(key + ":", "g"), key + "?:");
       } else {
-        result = result.replace(new RegExp(key + ':', 'g'), key + ':');
+        result = result.replace(new RegExp(key + ":", "g"), key + ":");
       }
     }
 
     objectName = this.removeMajority(objectName);
 
-    return 'export interface ' + objectName + ' ' + result;
+    return "export interface " + objectName + " " + result;
   }
 
   private removeMajority(objectName: string): string {
-    if (_.last(objectName, 3).join('').toUpperCase() === 'IES') {
-      return objectName.substring(0, objectName.length - 3) + 'y';
-    } else if (_.last(objectName).toUpperCase() === 'S') {
+    if (objectName.slice(-3).toUpperCase() === "IES") {
+      return objectName.substring(0, objectName.length - 3) + "y";
+    } else if (objectName.slice(-1).toUpperCase() === "S") {
       return objectName.substring(0, objectName.length - 1);
     }
 
@@ -166,7 +175,7 @@ export class Json2Ts {
     return text.charAt(0).toLowerCase() + text.slice(1);
   }
 
-  isJson(stringContent): boolean {
+  isJson(stringContent: string): boolean {
     try {
       JSON.parse(stringContent);
     } catch (e) {
